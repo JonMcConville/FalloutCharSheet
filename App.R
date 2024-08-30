@@ -18,6 +18,7 @@ CharStats <- read.csv("C:/RLibraries/FalloutTTRPG/Grizzly.csv")
 SkillDesc <- read.csv("C:/RLibraries/FalloutTTRPG/SkillDesc.csv")
 PerkDesc <- read.csv("C:/RLibraries/FalloutTTRPG/Perks.csv")
 Ammunition <- read.csv("C:/RLibraries/FalloutTTRPG/Ammunition.csv")
+Weapons <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Weapons.csv")
 
 items <- c("Choose Ammo ...",Ammunition %>%
              select(AMMUNITION.TYPE))
@@ -129,7 +130,7 @@ ui <- dashboardPage(
               
               fluidRow(
                 
-                column(width = 3,
+                column(width = 4,
                        
                        titlePanel(title = "Skills"),
                        dataTableOutput("Skills")
@@ -143,6 +144,15 @@ ui <- dashboardPage(
                        
                        
                        )
+                
+                
+              ),
+              
+              fluidRow(
+                
+                titlePanel(title = "Weapons"),
+                dataTableOutput("Weapons")
+                
                 
                 
               )
@@ -214,21 +224,31 @@ server <- function(input, output) {
   })
   
   output$Skills <- DT::renderDT({
-    datatable(merge(
+    datatable(merge(merge(
       SkillDesc %>%
         select("Skill" = SKILL,"Perk" = ATTRIBUTE),
       CharStats %>%
         filter(Attributetype == "Skills")%>%
         select("Skill" = Attribute,Value),
-      by = "Skill"),
+      by = "Skill")
+      
+      ,CharStats%>%
+        filter(Attributetype == "Tag Skills")%>%
+        select("Skill" =  Attribute, "Tagged" = Value),
+      by.x = "Skill", by.y = "Skill", all = TRUE,
+      #    by = "Skill",
       options = list(
         paging = FALSE,  # Disable pagination
         #      scrollY = "400px",  # Optional: Scroll within a fixed height window
         scrollCollapse = TRUE
       ),
-      rownames = FALSE
-      
-)
+      rownames = FALSE),
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
   })
   
   output$Inventory <- DT::renderDT({
@@ -259,6 +279,49 @@ server <- function(input, output) {
     ),
     rownames = FALSE)
   })
+  
+  
+  output$Weapons <- DT::renderDT({
+    datatable(
+      merge(merge(merge(merge(CharStats%>%
+                                filter(Attributetype=="Inventory")%>%
+                                select(Attribute),
+                              Weapons,
+                              by.x = "Attribute",
+                              by.y = "WEAPON"
+      ),
+      CharStats%>%
+        filter(Attributetype == "Skills")%>%
+        select(Attribute, "SkillValue" = Value),
+      by.x = "WEAPON.TYPE",
+      by.y = "Attribute"),
+      SkillDesc,
+      by.x = "WEAPON.TYPE",
+      by.y = "SKILL"),
+      CharStats%>%
+        filter(Attributetype == "SPECIAL")%>%
+        mutate(Name_short = toupper(substr(Attribute, 1, 3)))%>%
+        select(Name_short, Value),
+      by.x ="ATTRIBUTE",
+      by.y = "Name_short")%>%
+        mutate(TN = as.numeric(SkillValue) + as.numeric(Value))%>%
+        select("Name" = Attribute, "Skill" = WEAPON.TYPE, TN, "Damage" = DAMAGE.RATING, "Effects" = DAMAGE.EFFECTS, "Type" = DAMAGE.TYPE, "Rate" = FIRE.RATE, "Range" = RANGE, "Qualities" = QUALITIES, "Weight" = WEIGHT),
+      
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+    
+  })
+  
+  
+  
+  
+  
+  
+  
   
   #Inventory Server code ----
   

@@ -3,6 +3,9 @@ library(tidyverse)
 CharStats <- read.csv("C:/RLibraries/FalloutTTRPG/Grizzly.csv")
 SkillDesc <- read.csv("C:/RLibraries/FalloutTTRPG/SkillDesc.csv")
 PerkDesc <- read.csv("C:/RLibraries/FalloutTTRPG/Perks.csv")
+Ammunition <- read.csv("C:/RLibraries/FalloutTTRPG/Ammunition.csv")
+Weapons <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Weapons.csv")
+Armour <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Armour.csv")
 
 
 SPECIAL <- CharStats %>%
@@ -131,5 +134,33 @@ Inventory %>%
   .$Value[1]
 
 
-Ammunition <- read.csv("C:/RLibraries/FalloutTTRPG/Ammunition.csv")
 
+Test <- merge(merge(merge(merge(CharStats%>%
+        filter(Attributetype=="Inventory")%>%
+        select(Attribute),
+      Weapons,
+      by.x = "Attribute",
+      by.y = "WEAPON"
+      ),
+      CharStats%>%
+        filter(Attributetype == "Skills")%>%
+        select(Attribute, "SkillValue" = Value),
+      by.x = "WEAPON.TYPE",
+      by.y = "Attribute"),
+      SkillDesc,
+      by.x = "WEAPON.TYPE",
+      by.y = "SKILL"),
+      CharStats%>%
+        filter(Attributetype == "SPECIAL")%>%
+        mutate(Name_short = toupper(substr(Attribute, 1, 3)))%>%
+        select(Name_short, Value),
+      by.x ="ATTRIBUTE",
+      by.y = "Name_short")%>%
+  mutate(TN = as.numeric(SkillValue) + as.numeric(Value))%>%
+  select("Name" = Attribute, "Skill" = WEAPON.TYPE, TN, "Damage" = DAMAGE.RATING, "Effects" = DAMAGE.EFFECTS, "Type" = DAMAGE.TYPE, "Rate" = FIRE.RATE, "Range" = RANGE, "Qualities" = QUALITIES, "Weight" = WEIGHT)
+
+
+CharStats%>%
+  filter(Attributetype == "SPECIAL")%>%
+  mutate(Name_short = toupper(substr(Attribute, 1, 3)))%>%
+  select(Name_short, Value)
