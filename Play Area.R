@@ -6,6 +6,7 @@ PerkDesc <- read.csv("C:/RLibraries/FalloutTTRPG/Perks.csv")
 Ammunition <- read.csv("C:/RLibraries/FalloutTTRPG/Ammunition.csv")
 Weapons <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Weapons.csv")
 Armour <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Armour.csv")
+WeaponMODs <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Weapon_MODS.csv")
 
 
 SPECIAL <- CharStats %>%
@@ -164,3 +165,11 @@ CharStats%>%
   filter(Attributetype == "SPECIAL")%>%
   mutate(Name_short = toupper(substr(Attribute, 1, 3)))%>%
   select(Name_short, Value)
+
+
+ArmourDerivedStats <- data.frame(Attribute = c("Clothing","Armour Head", "Head Phy DR", "Head Rad DR", "Head En DR", "Head HP",
+  "Armour Left Arm", "Left Arm Phy DR", "Left Arm Rad DR", "Left Arm En DR", "Left Arm HP",
+  "Armour Right Arm", "Right Arm Phy DR", "Right Arm Rad DR", "Right Arm En DR", "Right Arm HP",
+  "Armour Torso", "Torso Phy DR", "Torso Rad DR", "Torso En DR", "Torso HP",
+  "Armour Left Leg", "Left Leg Phy DR", "Left Leg Rad DR", "Left Leg En DR", "Left Leg HP",
+  "Armour Right Leg", "Right Leg Phy DR", "Right Leg Rad DR", "Right Leg En DR", "Right Leg HP"))
