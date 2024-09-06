@@ -19,6 +19,13 @@ SkillDesc <- read.csv("C:/RLibraries/FalloutTTRPG/SkillDesc.csv")
 PerkDesc <- read.csv("C:/RLibraries/FalloutTTRPG/Perks.csv")
 Ammunition <- read.csv("C:/RLibraries/FalloutTTRPG/Ammunition.csv")
 Weapons <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Weapons.csv")
+WeaponMODS <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Weapon_MODS.csv")
+Armour <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Armour.csv")
+Food <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Food.csv")
+Drink <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Beverages.csv")
+Drugs <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Drugs.csv")
+DropList <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_DropList.csv")
+Crafting <- read.csv("C:/RLibraries/FalloutTTRPG/FalloutTTRPG_Crafting.csv")
 
 items <- c("Choose Ammo ...",Ammunition %>%
              select(AMMUNITION.TYPE))
@@ -92,6 +99,13 @@ DerivedCharStats <- data.frame(
   )
 )
 
+LootTableDice <- DropList %>%
+  select(DROP.TABLE,ROLL) %>%
+  group_by(DROP.TABLE)%>%
+  arrange(desc(ROLL))%>%
+  distinct(DROP.TABLE, .keep_all = TRUE)%>%
+  mutate(ROLL = ROLL/20)
+
 
 #UI ----
 
@@ -102,7 +116,9 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem(text = "Character Sheet", tabName = "CharBoard"),
+      menuItem(text = "Leveling Sheet", tabName = "LvlBoard"),
       menuItem(text = "Inventory Sheet", tabName = "InvBoard"),
+      menuItem(text = "Lookups", tabName = "LookupBoard"),
       menuItem(text = "Options", tabName = "OptionBoard")
     )
   ),
@@ -137,10 +153,38 @@ ui <- dashboardPage(
                        
                        
                        ),
-                column(width = 3,
+                column(width = 8,
                        
                        titlePanel(title = "Derived Stats"),
-                       dataTableOutput("DerivStats")
+                       dataTableOutput("DerivStats"),
+                       
+                       selectInput("Outfit", label = h3("Outfit"), 
+                                   choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
+                                   selected = 1),
+                       
+                       selectInput("Head", label = h3("Head"), 
+                                   choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
+                                   selected = 1),
+                       
+                       selectInput("LeftArm", label = h3("Left Arm"), 
+                                   choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
+                                   selected = 1),
+                       
+                       selectInput("RightArm", label = h3("Right Arm"), 
+                                   choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
+                                   selected = 1),
+                       
+                       selectInput("Torso", label = h3("Torso"), 
+                                   choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
+                                   selected = 1),
+                       
+                       selectInput("LeftLeg", label = h3("Left Leg"), 
+                                   choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
+                                   selected = 1),
+                       
+                       selectInput("RightLeg", label = h3("Right Leg"), 
+                                   choices = list("Choice 1" = 1, "Choice 2" = 2, "Choice 3" = 3), 
+                                   selected = 1)
                        
                        
                        )
@@ -159,6 +203,41 @@ ui <- dashboardPage(
               
               
             ),
+      
+      
+      # Leveling Dashboard ----
+      
+      
+      tabItem(tabName = "LvlBoard",
+              
+              fluidRow(titlePanel("Charcter Level Choices")),
+              
+              fluidRow(titlePanel("Level 2")),
+              
+              fluidRow(titlePanel("Level 3")),
+              
+              fluidRow(titlePanel("Level 4")),
+              
+              fluidRow(titlePanel("Level 5")),
+              
+              fluidRow(titlePanel("Level 6")),
+              
+              fluidRow(titlePanel("Level 7")),
+              
+              fluidRow(titlePanel("Level 8")),
+              
+              fluidRow(titlePanel("Level 9")),
+              
+              fluidRow(titlePanel("Level 10")),
+              
+              fluidRow(titlePanel("Level 11")),
+              
+              fluidRow(titlePanel("Level 12"))
+              
+              
+              ),
+      
+
       
       # Inventory Dashboard ----
       
@@ -180,8 +259,115 @@ ui <- dashboardPage(
                   DTOutput("item_table")
                 )
               )
-        
+              
       ),
+      
+      # Item Board ----
+      
+      tabItem(tabName = "LookupBoard",
+              tabsetPanel(
+                tabPanel(title = "Weapons",
+                         
+                         titlePanel(title = "Weapons"),
+                         dataTableOutput("WeapItems"),
+                         
+                ),
+                
+                tabPanel(title = "Weapon MODS",
+                         
+                         titlePanel(title = "Weapon MODS"),
+                         dataTableOutput("WeapMODSLookup"),
+                         
+                ),
+                
+                tabPanel(title = "Ammunition",
+                         
+                         titlePanel(title = "Ammunition"),
+                         dataTableOutput("AmmunitionLookup"),
+                         
+                ),
+                
+                tabPanel(title = "Armour",
+                         
+                         titlePanel(title = "Armour"),
+                         dataTableOutput("ArmourItems"),
+                         
+                ),
+                
+                tabPanel(title = "FoodDrink",
+                         
+                         titlePanel(title = "Food"),
+                         dataTableOutput("FoodItems"),
+                         
+                         titlePanel(title = "Drink"),
+                         dataTableOutput("DrinkItems")
+                         
+                ),
+                
+                tabPanel(title = "Drugs",
+                         
+                         titlePanel(title = "Drugs"),
+                         dataTableOutput("DrugItems")
+                         
+                ),
+                
+                tabPanel(title = "Perks",
+                         
+                         titlePanel(title = "Perks"),
+                         dataTableOutput("PerkLookup")
+                         
+                ),
+                
+                tabPanel(title = "Skills",
+                         
+                         titlePanel(title = "Skills"),
+                         dataTableOutput("SkillLookup")
+                         
+                ),
+                
+                tabPanel(title = "Drop List",
+                         
+                         fluidRow(
+                           
+                           
+                           
+                           
+                           selectInput(inputId="selectDropList", label = h3("Select Deck"), 
+                                       choices = c("Choose Drop List ...",DropList %>%
+                                                     select(DROP.TABLE) %>%
+                                                     distinct(DROP.TABLE) %>%
+                                                     arrange(DROP.TABLE))
+                           ),
+                           
+                           column(width = 5,
+                                  
+                                  titlePanel(title = "Drop List"),
+                                  dataTableOutput("DropList")
+                                  
+                           )
+                           
+                           
+                         )),
+                
+                tabPanel(title = "Crafting",
+                         
+                         fluidRow(
+                           
+                           
+                           
+                           
+                           selectInput(inputId="selectCraft", label = h3("Select Station"), 
+                                       choices = c("Choose Crafting Station",Crafting %>%
+                                                     select(WORKBENCH) %>%
+                                                     distinct(WORKBENCH) %>%
+                                                     arrange(WORKBENCH))
+                           ),
+                         ),
+                         
+                         titlePanel(title = "Crafting"),
+                         dataTableOutput("CraftList")
+                         
+                ))),
       
       # Options Dashboard ----
       
@@ -271,7 +457,7 @@ server <- function(input, output) {
   
   output$DerivStats <- DT::renderDT({
     datatable(
-    DerivedCharStats,
+    t(DerivedCharStats),
     options = list(
       paging = FALSE,  # Disable pagination
       #      scrollY = "400px",  # Optional: Scroll within a fixed height window
@@ -313,6 +499,10 @@ server <- function(input, output) {
         scrollCollapse = TRUE
       ),
       rownames = FALSE)
+    
+    
+    
+    
     
   })
   
@@ -385,6 +575,144 @@ server <- function(input, output) {
       selected_items(current_data)
     }
   })
+  
+  output$WeapItems <- DT::renderDT({
+    datatable(
+    Weapons,
+    options = list(
+      paging = FALSE,  # Disable pagination
+      #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+      scrollCollapse = TRUE
+    ),
+    rownames = FALSE)
+  })
+  
+  output$WeapMODSLookup <- DT::renderDT({
+    datatable(
+      WeaponMODS,
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
+  output$AmmunitionLookup <- DT::renderDT({
+    datatable(
+      Ammunition,
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
+  output$ArmourItems <- DT::renderDT({
+    datatable(
+      Armour,
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
+  output$FoodItems <- DT::renderDT({
+    datatable(
+      Food,
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
+  output$DrinkItems <- DT::renderDT({
+    datatable(
+      Drink,
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
+  output$DrugItems <- DT::renderDT({
+    datatable(
+      Drugs,
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
+  output$PerkLookup <- DT::renderDT({
+    datatable(
+      PerkDesc,
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
+  output$SkillLookup <- DT::renderDT({
+    datatable(
+      SkillDesc,
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
+  output$DropList <- DT::renderDT({
+    datatable(
+      DropList%>%
+        filter(DROP.TABLE == input$selectDropList)%>%
+        select(ROLL,DROP,NOTES),
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
+  
+  roll_dice <- eventReactive(input$roll_button, {
+    num_dice <- as.numeric(LootTableDice[LootTableDice$DROP.TABLE == input$selectDropList, "ROLL"])
+    rolls <- sample(1:20, num_dice, replace = TRUE)
+    sumroll <- sum(rolls)
+    returneditem <- DropList[DropList$DROP.TABLE == input$selectDropList & DropList$ROLL == sumroll, "DROP"]
+    paste("You found:", returneditem, "from rolling", sumroll, "(",paste(rolls, collapse = ", "), ")")
+  })
+  
+  output$roll_result <- renderText({
+    roll_dice()
+  })
+  
+  output$CraftList <- DT::renderDT({
+    datatable(
+      Crafting%>%
+        filter(WORKBENCH == input$selectCraft),
+      options = list(
+        paging = FALSE,  # Disable pagination
+        #      scrollY = "400px",  # Optional: Scroll within a fixed height window
+        scrollCollapse = TRUE
+      ),
+      rownames = FALSE)
+  })
+  
   
 
 }  
