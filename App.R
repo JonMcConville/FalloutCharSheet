@@ -111,7 +111,22 @@ LootTableDice <- DropList %>%
 
 ui <- dashboardPage(
   
-  dashboardHeader(title = "Fallout TTRPG Character Sheet"),
+  tags$head(
+    tags$link(
+      href = "https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap",
+      rel = "stylesheet"
+    ),
+    
+    # Apply the font to the entire app
+    tags$style(HTML("
+      body, h1, h2, h3, h4, h5, h6, .box-title, .sidebar-menu, .selectize-input, .dataTables_wrapper {
+        font-family: 'Share Tech Mono', monospace;
+      }
+    "))
+  ),
+  
+  
+  dashboardHeader(title = "Fallout TTRPG Character Sheet", class = "main-header"),
   
   dashboardSidebar(
     sidebarMenu(
