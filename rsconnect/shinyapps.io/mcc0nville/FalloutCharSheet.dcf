@@ -1,0 +1,13 @@
+name: FalloutCharSheet
+title: FalloutCharSheet
+username: mcc0nville
+account: mcc0nville
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12709911
+bundleId: 9099728
+url: https://mcc0nville.shinyapps.io/FalloutCharSheet/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Initialscript.R|Play Area.R
